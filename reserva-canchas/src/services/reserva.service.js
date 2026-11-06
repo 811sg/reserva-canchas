@@ -7,8 +7,24 @@ class ReservaService extends BaseService {
   constructor() {
     super(Reserva, {
       populate: [{ path: 'cancha', select: 'nombre deporte', populate: { path: 'sede', select: 'nombre' } }, { path: 'cliente', select: 'nombre email' }],
-      filters: ['estado', 'fecha', 'cancha', 'cliente'], search: ['fecha', 'estado']
+      filters: { estado: 'estado', fecha: 'fecha', cliente: 'cliente', metodo: 'pago.metodo', pagado: 'pago.pagado' },
+      rangos: { fecha: ['desde', 'hasta'], total: ['minTotal', 'maxTotal'] }, search: ['fecha', 'estado'],
+      ordenes: { fechaDesc: '-fecha -horaInicio', fechaAsc: 'fecha horaInicio', totalDesc: '-total', totalAsc: 'total', recientes: '-createdAt' }, ordenDefault: 'fechaDesc'
     });
+  }
+  // sede, deporte y cancha viven en la colección canchas: se resuelven a una lista de ids; la búsqueda libre también mira nombres
+  async buildFilter(q) {
+    const f = await super.buildFilter(q);
+    if (q.sede || q.deporte || q.cancha) {
+      const c = {}; if (q.sede) c.sede = q.sede; if (q.deporte) c.deporte = q.deporte; if (q.cancha) c._id = q.cancha;
+      f.cancha = { $in: await Cancha.find(c).distinct('_id') };
+    }
+    if (q.q) {
+      const rx = new RegExp(q.q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const [cl, ca] = await Promise.all([Cliente.find({ nombre: rx }).distinct('_id'), Cancha.find({ nombre: rx }).distinct('_id')]);
+      f.$or = [...(f.$or || []), { cliente: { $in: cl } }, { cancha: { $in: ca } }];
+    }
+    return f;
   }
   // Reglas de negocio de la reserva
   async beforeSave(d, id) {

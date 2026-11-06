@@ -1,7 +1,8 @@
 const BaseService = require('./base.service'), AppError = require('../utils/AppError');
 const { Sede, Cancha, Reserva } = require('../models');
 class CanchaService extends BaseService {
-  constructor() { super(Cancha, { populate: [{ path: 'sede', select: 'nombre' }], filters: ['deporte', 'sede', 'activa'], search: ['nombre', 'deporte'] }); }
+  constructor() { super(Cancha, { populate: [{ path: 'sede', select: 'nombre' }], filters: { deporte: 'deporte', sede: 'sede', activa: 'activa' }, rangos: { precioHora: ['minPrecio', 'maxPrecio'] }, regex: { servicio: 'servicios' }, search: ['nombre', 'deporte'],
+      ordenes: { recientes: '-createdAt', nombre: 'nombre', precioAsc: 'precioHora', precioDesc: '-precioHora' } }); }
   async beforeSave(d) {
     if (!await Sede.exists({ _id: d.sede })) throw new AppError('La sede no existe');
     if (typeof d.servicios === 'string') d.servicios = d.servicios.split(',').map(s => s.trim()).filter(Boolean);

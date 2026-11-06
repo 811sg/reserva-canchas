@@ -1,11 +1,23 @@
-// Definición de las pantallas: f = campos del formulario [nombre, etiqueta, tipo, ruta del valor]; c = columnas; fl = filtro
-const DEP = ['futbol', 'baloncesto', 'tenis', 'voleibol'], EST = ['pendiente', 'confirmada', 'cancelada'];
+// Pantallas: h/sub = encabezado, f = campos del formulario [nombre, etiqueta, tipo, ruta del valor], fl = filtros [parametro, etiqueta, tipo], c = columnas (tabla), card = tarjetas
+// Tipos: text, number, date, time, email, ref:coleccion, sel:valor|Etiqueta,valor|Etiqueta
+const DEP = ['futbol', 'baloncesto', 'tenis', 'voleibol'], EST = ['pendiente', 'confirmada', 'cancelada'], PAGO = 'efectivo,tarjeta,transferencia';
 const E = {
-  reservas: { t: 'Reservas', f: [['cancha', 'Cancha', 'ref:canchas', 'cancha._id'], ['cliente', 'Cliente', 'ref:clientes', 'cliente._id'], ['fecha', 'Fecha', 'date'], ['horaInicio', 'Inicio', 'time'], ['horaFin', 'Fin', 'time'], ['estado', 'Estado', 'sel:' + EST], ['metodoPago', 'Método de pago', 'sel:efectivo,tarjeta,transferencia', 'pago.metodo']],
-    c: ['cancha.nombre', 'cancha.sede.nombre', 'cliente.nombre', 'fecha', 'horaInicio', 'horaFin', 'total', 'estado', 'pago.metodo'], fl: ['estado', EST] },
-  canchas: { t: 'Canchas', f: [['nombre', 'Nombre'], ['sede', 'Sede', 'ref:sedes', 'sede._id'], ['deporte', 'Deporte', 'sel:' + DEP], ['precioHora', 'Precio por hora', 'number'], ['activa', 'Disponible', 'sel:true,false'], ['servicios', 'Servicios (separados por coma)']],
-    c: ['nombre', 'sede.nombre', 'deporte', 'precioHora', 'activa', 'servicios'], fl: ['deporte', DEP] },
-  clientes: { t: 'Clientes', f: [['nombre', 'Nombre'], ['email', 'Correo', 'email'], ['telefono', 'Teléfono']], c: ['nombre', 'email', 'telefono'] },
-  sedes: { t: 'Sedes', f: [['nombre', 'Nombre'], ['ciudad', 'Ciudad'], ['direccion', 'Dirección']], c: ['nombre', 'ciudad', 'direccion'] }
+  reservas: { t: 'Reservas', h: 'Reserva tu cancha', sub: 'Elige cancha y fecha, toca un horario libre y confirma.', cta: 'Reservar', card: true, rapidos: true,
+    f: [['cancha', 'Cancha', 'ref:canchas', 'cancha._id'], ['fecha', 'Fecha', 'date'], ['cliente', 'Jugador', 'ref:clientes', 'cliente._id'], ['horaInicio', 'Hora de inicio', 'time'], ['horaFin', 'Hora de fin', 'time'], ['estado', 'Estado', 'sel:' + EST], ['metodoPago', 'Método de pago', 'sel:' + PAGO, 'pago.metodo']],
+    fl: [['estado', 'Estado', 'sel:' + EST], ['sede', 'Sede', 'ref:sedes'], ['cancha', 'Cancha', 'ref:canchas'], ['deporte', 'Deporte', 'sel:' + DEP], ['cliente', 'Jugador', 'ref:clientes'],
+      ['desde', 'Fecha desde', 'date'], ['hasta', 'Fecha hasta', 'date'], ['metodo', 'Método de pago', 'sel:' + PAGO], ['pagado', 'Pago', 'sel:true|Pagado,false|Sin pagar'],
+      ['minTotal', 'Total mínimo', 'number'], ['maxTotal', 'Total máximo', 'number'],
+      ['orden', 'Ordenar por', 'sel:fechaDesc|Fecha (más reciente),fechaAsc|Fecha (más antigua),totalDesc|Mayor total,totalAsc|Menor total']] },
+  canchas: { t: 'Canchas', h: 'Nuestras canchas', sub: 'Administra canchas por sede, deporte y precio por hora.', cta: 'Guardar cancha', card: true,
+    f: [['nombre', 'Nombre'], ['sede', 'Sede', 'ref:sedes', 'sede._id'], ['deporte', 'Deporte', 'sel:' + DEP], ['precioHora', 'Precio por hora', 'number'], ['activa', 'Disponible', 'sel:true|Sí,false|No'], ['servicios', 'Servicios (separados por coma)']],
+    fl: [['deporte', 'Deporte', 'sel:' + DEP], ['sede', 'Sede', 'ref:sedes'], ['activa', 'Disponibilidad', 'sel:true|Disponible,false|No disponible'], ['servicio', 'Servicio incluido', 'text'],
+      ['minPrecio', 'Precio mínimo', 'number'], ['maxPrecio', 'Precio máximo', 'number'],
+      ['orden', 'Ordenar por', 'sel:recientes|Más recientes,nombre|Nombre,precioAsc|Precio menor,precioDesc|Precio mayor']] },
+  clientes: { t: 'Jugadores', h: 'Jugadores', sub: 'Las personas que reservan en tus sedes.', cta: 'Guardar jugador',
+    f: [['nombre', 'Nombre'], ['email', 'Correo', 'email'], ['telefono', 'Teléfono']], c: ['nombre', 'email', 'telefono'],
+    fl: [['email', 'Correo contiene', 'text'], ['orden', 'Ordenar por', 'sel:nombre|Nombre,recientes|Más recientes']] },
+  sedes: { t: 'Sedes', h: 'Sedes', sub: 'Dónde se juega.', cta: 'Guardar sede',
+    f: [['nombre', 'Nombre'], ['ciudad', 'Ciudad'], ['direccion', 'Dirección']], c: ['nombre', 'ciudad', 'direccion'],
+    fl: [['ciudad', 'Ciudad', 'text'], ['orden', 'Ordenar por', 'sel:nombre|Nombre,recientes|Más recientes']] }
 };
 const OPCIONALES = ['direccion', 'telefono', 'servicios'];
