@@ -3,7 +3,7 @@ Node.js + Express + MongoDB Atlas (Mongoose) + interfaz web. Arquitectura por ca
 
 ## Ejecutar
 1. `npm install`
-2. Copia `.env.example` a `.env` y pon tu cadena de conexión de Atlas en `MONGODB_URI`
+2. Copia`.env` y pon tu cadena de conexión de Atlas en `MONGODB_URI`
 3. `npm run seed` (carga datos de ejemplo; borra y recrea las colecciones)
 4. `npm start` → http://localhost:3000
 
